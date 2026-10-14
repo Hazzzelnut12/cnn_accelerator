@@ -16,3 +16,6 @@ artifacts/
 *.wdb
 *.vcd
 *.saif
+
+# 확정 모델(models/)의 학습 로그는 보존 (위 *.log보다 뒤에 있어야 적용됨)
+!models/**/train.log

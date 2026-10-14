@@ -12,7 +12,15 @@ import torch
 from torch import Generator, Tensor, nn
 from torch.utils.data import DataLoader, Subset, random_split
 from torchvision.datasets import MNIST
-from torchvision.transforms import ToTensor
+from torchvision.transforms import Compose, RandomAffine, ToTensor
+
+
+# 학습용 증강: 작은 회전(±10도)·이동(±10%)·크기(90~110%). 빈 영역은 0(검은 배경)으로 채움.
+# 숫자 의미가 바뀌는 좌우 반전·큰 회전은 사용하지 않음.
+AUGMENT_TRANSFORM = Compose([
+    RandomAffine(degrees=10, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+    ToTensor(),
+])
 
 
 # 블록 1: MNIST용 CNN 구조 정의
@@ -58,7 +66,7 @@ class MnistCNN(nn.Module):
 
 
 # 블록 2: MNIST 불러오기와 학습용/검증용 분할
-def load_mnist(seed: int = 42) -> tuple[Subset, Subset]:
+def load_mnist(seed: int = 42, augment: bool = False) -> tuple[Subset, Subset]:
     # 실행 위치와 관계없이 train.py 옆의 data 폴더에 저장.
     data_dir = Path(__file__).resolve().parent / "data"
 
@@ -78,6 +86,12 @@ def load_mnist(seed: int = 42) -> tuple[Subset, Subset]:
         lengths=[55_000, 5_000],
         generator=Generator().manual_seed(seed),
     )
+
+    # 증강 시 학습용만 증강 transform으로 다시 읽음. 같은 index를 사용하므로 분할은 동일하고,
+    # 검증용은 원본 그대로 평가.
+    if augment:
+        augmented = MNIST(root=data_dir, train=True, download=True, transform=AUGMENT_TRANSFORM)
+        train_dataset = Subset(augmented, train_dataset.indices)
     return train_dataset, val_dataset
 
 
@@ -114,7 +128,8 @@ def create_data_loaders(
 def prepare_training(
     learning_rate: float = 0.001,
     seed: int = 42,
-) -> tuple[torch.device, MnistCNN, nn.CrossEntropyLoss, torch.optim.Adam]:
+    weight_decay: float = 0.0,
+) -> tuple[torch.device, MnistCNN, nn.CrossEntropyLoss, torch.optim.Optimizer]:
     # 모델의 초기 가중치를 같은 조건에서 재현하기 위한 seed.
     torch.manual_seed(seed)
 
@@ -128,7 +143,11 @@ def prepare_training(
 
     # 학습 시 모델 가중치를 갱신할 도구. 생성만으로는 갱신되지 않음.
     # lr은 갱신 크기를 조절하는 학습률이며, 0.001을 초기 설정으로 사용.
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    # weight decay를 쓰면 손실과 분리해 가중치를 줄이는 AdamW 사용. 0이면 기준 실험과 같은 Adam.
+    if weight_decay > 0:
+        optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    else:
+        optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     return device, model, criterion, optimizer
 
 
@@ -225,6 +244,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=20, help="학습 횟수 (기본: 20)")
     parser.add_argument("--batch-size", type=int, default=64, help="batch 크기 (기본: 64)")
     parser.add_argument("--lr", type=float, default=0.001, help="Adam 학습률 (기본: 0.001)")
+    parser.add_argument("--augment", action="store_true", help="학습용 데이터에 작은 회전·이동·크기 증강 적용")
+    parser.add_argument(
+        "--scheduler", choices=["none", "cosine"], default="none",
+        help="epoch별 학습률 조정. cosine: 마지막 epoch까지 0에 가깝게 감소 (기본: none)",
+    )
+    parser.add_argument(
+        "--weight-decay", type=float, default=0.0,
+        help="0보다 크면 AdamW로 가중치 감쇠 적용 (기본: 0, Adam)",
+    )
     parser.add_argument("--seed", type=int, default=42, help="분할·초기화 seed (기본: 42)")
     parser.add_argument("--log-interval", type=int, default=100, help="몇 batch마다 진행 상황을 표시할지")
     parser.add_argument(
@@ -237,6 +265,8 @@ def parse_args() -> argparse.Namespace:
         parser.error("epochs, batch-size, log-interval은 양수여야 합니다.")
     if not math.isfinite(args.lr) or args.lr <= 0:
         parser.error("lr은 유한한 양수여야 합니다.")
+    if not math.isfinite(args.weight_decay) or args.weight_decay < 0:
+        parser.error("weight-decay는 0 이상의 유한한 값이어야 합니다.")
     if not 0 <= args.seed < 2**63:
         parser.error("seed는 0 이상 2**63 미만이어야 합니다.")
     return args
@@ -261,20 +291,31 @@ def main() -> None:
     logging.info("결과 저장 위치: %s", run_dir)
     logging.info("데이터와 학습 장치를 준비합니다. 중단은 Ctrl+C입니다.")
 
-    train_dataset, val_dataset = load_mnist(seed=args.seed)
+    train_dataset, val_dataset = load_mnist(seed=args.seed, augment=args.augment)
     train_loader, val_loader = create_data_loaders(
         train_dataset, val_dataset, batch_size=args.batch_size, seed=args.seed,
     )
-    device, model, criterion, optimizer = prepare_training(args.lr, args.seed)
+    device, model, criterion, optimizer = prepare_training(args.lr, args.seed, args.weight_decay)
+    # cosine: 매 epoch 끝에 학습률을 줄여 마지막 epoch에서 0에 가깝게 만듦.
+    scheduler = (
+        torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
+        if args.scheduler == "cosine" else None
+    )
+    optimizer_name = type(optimizer).__name__
     device_name = torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
     config = {
         "started_at": started_at.isoformat(),
         "epochs": args.epochs, "batch_size": args.batch_size,
         "learning_rate": args.lr, "seed": args.seed,
+        "optimizer": optimizer_name, "weight_decay": args.weight_decay,
+        "scheduler": args.scheduler, "augment": args.augment,
         "log_interval": args.log_interval,
         "train_size": len(train_dataset), "val_size": len(val_dataset),
         "model": "MnistCNN: Conv 1->8->16, FC 784->32->10",
-        "input": "NCHW, float32, pixel/255, no augmentation",
+        "input": "NCHW, float32, pixel/255, " + (
+            "train augmentation: rotate ±10deg, translate ±10%, scale 0.9-1.1"
+            if args.augment else "no augmentation"
+        ),
         "parameters": sum(p.numel() for p in model.parameters()),
         "device": str(device), "device_name": device_name,
         "torch_version": str(torch.__version__),
@@ -285,9 +326,10 @@ def main() -> None:
     )
     logging.info("장치: %s | 모델 파라미터: %s개", device_name, f"{config['parameters']:,}")
     logging.info(
-        "학습 %s장 / 검증 %s장 | batch %d | Adam lr %g | %d epoch",
+        "학습 %s장 / 검증 %s장 | batch %d | %s lr %g, weight decay %g | scheduler %s | 증강 %s | %d epoch",
         f"{len(train_dataset):,}", f"{len(val_dataset):,}",
-        args.batch_size, args.lr, args.epochs,
+        args.batch_size, optimizer_name, args.lr, args.weight_decay,
+        args.scheduler, "사용" if args.augment else "없음", args.epochs,
     )
 
     best_accuracy = -1.0
@@ -295,7 +337,7 @@ def main() -> None:
     best_epoch = 0
     best_path = run_dir / "best.pt"
     training_start = perf_counter()
-    fields = ["epoch", "train_loss", "train_accuracy", "val_loss", "val_accuracy", "seconds", "is_best"]
+    fields = ["epoch", "lr", "train_loss", "train_accuracy", "val_loss", "val_accuracy", "seconds", "is_best"]
     with (run_dir / "history.csv").open("w", newline="", encoding="utf-8") as history_file:
         writer = csv.DictWriter(history_file, fieldnames=fields)
         writer.writeheader()
@@ -303,10 +345,13 @@ def main() -> None:
 
         for epoch in range(1, args.epochs + 1):
             epoch_start = perf_counter()
-            logging.info("\nEpoch %d/%d", epoch, args.epochs)
+            lr = optimizer.param_groups[0]["lr"]  # 이번 epoch에 사용하는 학습률.
+            logging.info("\nEpoch %d/%d | lr %.6g", epoch, args.epochs, lr)
             train_loss, train_accuracy = train_one_epoch(
                 model, train_loader, criterion, optimizer, device, args.log_interval,
             )
+            if scheduler is not None:
+                scheduler.step()
             val_loss, val_accuracy = validate(
                 model, val_loader, criterion, device, args.log_interval,
             )
@@ -330,7 +375,7 @@ def main() -> None:
 
             seconds = perf_counter() - epoch_start
             writer.writerow(dict(zip(fields, [
-                epoch, train_loss, train_accuracy, val_loss, val_accuracy, seconds, is_best,
+                epoch, lr, train_loss, train_accuracy, val_loss, val_accuracy, seconds, is_best,
             ])))
             history_file.flush()  # 실행 중에도 완료된 epoch 기록을 열어볼 수 있음.
             remaining = (perf_counter() - training_start) / epoch * (args.epochs - epoch)

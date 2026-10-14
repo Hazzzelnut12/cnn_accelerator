@@ -1,0 +1,21 @@
+{
+  "started_at": "2026-10-14T20:21:15.737092+09:00",
+  "epochs": 30,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "seed": 42,
+  "optimizer": "AdamW",
+  "weight_decay": 0.001,
+  "scheduler": "cosine",
+  "augment": true,
+  "log_interval": 100,
+  "train_size": 55000,
+  "val_size": 5000,
+  "model": "MnistCNN: Conv 1->8->16, FC 784->32->10",
+  "input": "NCHW, float32, pixel/255, train augmentation: rotate ±10deg, translate ±10%, scale 0.9-1.1",
+  "parameters": 26698,
+  "device": "cuda",
+  "device_name": "NVIDIA GeForce RTX 4060 Ti",
+  "torch_version": "2.11.0+cu128",
+  "selection": "highest validation accuracy; lower validation loss breaks ties"
+}

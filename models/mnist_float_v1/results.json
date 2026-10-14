@@ -1,0 +1,10 @@
+{
+  "best_epoch": 27,
+  "best_val_loss": 0.03632454763278365,
+  "best_val_accuracy": 0.9898,
+  "test_size": 10000,
+  "test_loss": 0.028192924125585706,
+  "test_accuracy": 0.9904,
+  "training_seconds": 304.3015219000001,
+  "checkpoint": "best.pt"
+}

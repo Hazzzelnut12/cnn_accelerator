@@ -4,6 +4,20 @@
 - **모델:** LeNet 파생 소형 CNN → INT8 양자화
 - **대상 보드:** Zynq-7020
 - **설계·작업 순서:** [계획.md](계획.md)
+- **구현·실험 기록:** [개발기록.md](개발기록.md)
+- **확정 모델:** [models/mnist_float_v1](models/mnist_float_v1/) · test 99.04%
+
+## 처음 받은 경우 (팀원용)
+
+1. 아래 "환경 구성" 명령으로 `.venv` 생성 (Windows x64 + NVIDIA GPU 필요)
+2. 확정 모델 재현 확인. 학습하지 않고 저장된 가중치로 test만 평가:
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\evaluate.py
+```
+
+- 성공 기준: 마지막 줄 `기록된 test accuracy 99.04% → 일치`
+- 이후 작업(INT8·RTL)은 직접 학습한 모델이 아니라 `models/mnist_float_v1/best.pt` 기준. GPU 학습은 seed를 고정해도 PC마다 결과가 미세하게 다름
 
 ## 학습 환경
 
@@ -60,6 +74,18 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 .\.venv\Scripts\python.exe -u .\train.py --epochs 20 --batch-size 64 --lr 0.001 --log-interval 100
 ```
 
+- 정확도 개선 옵션(기본은 모두 꺼짐 → 기준 실험과 동일):
+
+| 옵션 | 내용 |
+|---|---|
+| `--augment` | 학습용만 회전 ±10도·이동 ±10%·크기 90~110% 증강. 검증·test는 원본 |
+| `--scheduler cosine` | epoch마다 학습률을 줄여 마지막 epoch에서 0에 가깝게 만듦 |
+| `--weight-decay <값>` | 0보다 크면 AdamW로 가중치 감쇠 적용 |
+
+```powershell
+.\.venv\Scripts\python.exe -u .\train.py --epochs 30 --augment --scheduler cosine --weight-decay 1e-3
+```
+
 - 옵션 설명만 확인하기(학습 시작 안 함):
 
 ```powershell
@@ -83,8 +109,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 | 파일 | 내용 |
 |---|---|
 | `best.pt` | 최고 모델의 float 가중치, 선택된 epoch, 검증 지표, 실행 설정 |
-| `config.json` | epoch·batch·학습률·seed·모델·장치·PyTorch 버전 등 |
-| `history.csv` | 완료된 epoch별 학습/검증 지표·소요 시간·최고 모델 여부 |
+| `config.json` | epoch·batch·학습률·optimizer·weight decay·scheduler·증강·seed·모델·장치·PyTorch 버전 등 |
+| `history.csv` | 완료된 epoch별 학습률·학습/검증 지표·소요 시간·최고 모델 여부 |
 | `train.log` | 터미널에 표시한 진행 상황과 결과·오류 |
 | `results.json` | 학습 종료 후 최고 모델의 공식 test 결과 |
 
@@ -97,7 +123,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 import torch
 from train import MnistCNN
 
-checkpoint = torch.load("artifacts/mnist/<실행 시각>/best.pt", map_location="cpu", weights_only=True)
+checkpoint = torch.load("models/mnist_float_v1/best.pt", map_location="cpu", weights_only=True)
 model = MnistCNN()
 model.load_state_dict(checkpoint["model_state_dict"])
 model.eval()
@@ -114,12 +140,15 @@ model.eval()
 - `scripts/check_env.py`: GPU 동작 검증
 - `train.py`: CNN·데이터 준비·학습/검증·기록·최고 모델 저장·최종 test 평가
 - `data/`: 데이터셋 저장 위치 · Git 제외
-- `artifacts/`: 학습 가중치·생성 결과 저장 위치 · Git 제외
+- `artifacts/`: 실행별 학습 결과(실험용) · Git 제외
+- `models/`: 확정 모델 가중치·설정·학습 기록 · Git 포함
+- `scripts/evaluate.py`: 저장된 모델의 test 평가·기록 일치 확인
+- `scripts/analyze_sparsity.py`: validation 기준 층별 0 비율·예상 cycle 분석 → `docs/analysis/`
 
 ## 진행 상태
 
 - **P0 완료:** 학습 환경 구성·GPU 연산 검증
-- **P1 실행 준비 완료:** MNIST 데이터 준비·모델·학습/검증·저장 코드 작성. 실제 학습과 정확도 확인은 사용자 실행 후 진행
+- **P1 완료:** float 모델 test 99.04% (`models/mnist_float_v1`), validation 희소성 분석. 상세는 [개발기록.md](개발기록.md)
 - **후속 순서:** INT8 양자화 → 정수 기준 모델 → RTL 구현
 
 ## 참고
