@@ -3,8 +3,8 @@
 Zynq-7020 보드에서 손글씨 숫자열을 실시간으로 판독. LeNet 계열 CNN을 직접 작성한 Verilog로 가속.
 
 - **계획:** [계획.md](계획.md) · **진행 기록:** [개발기록.md](개발기록.md)
-- **확정 모델:** [models/mnist_float_v1](models/mnist_float_v1/) (test 99.04%)
-- **진행:** P0 환경 ✅ · P1 float 모델 ✅ · 다음 P2 INT8 정수 reference
+- **확정 모델:** float [mnist_float_v1](models/mnist_float_v1/) (test 99.04%) → INT8 [mnist_int8_v1](models/mnist_int8_v1/) (test 99.04%), 규격 [int8-spec](docs/spec/int8-spec.md)
+- **진행:** P0~P3 ✅ · 다음 P4a RTL 구조 설계
 
 ## 시작하기
 
@@ -42,11 +42,22 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 - **공유:** `artifacts/`는 Git 제외. 확정한 모델만 `models/<이름>/`으로 복사해서 commit
 - **희소성 분석:** `.\.venv\Scripts\python.exe .\scripts\analyze_sparsity.py` → `docs/analysis/`
 
+## INT8 정수 모델
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\quantize.py --save signed:max   # 설정 4개 비교 + 선택 설정 저장
+.\.venv\Scripts\python.exe .\scripts\export_golden.py               # hex export + golden trace + 재계산 검증
+```
+
+- 성공 기준: 마지막 줄 `PASS`
+- golden trace는 `build/golden/`에 생성 (Git 제외, 위 명령으로 재생성)
+
 ## 폴더
 
 | 경로 | 내용 |
 |---|---|
 | `train.py` | 모델·데이터·학습·평가 |
+| `quant.py` | INT8 정수 reference (RTL이 맞출 정답) |
 | `models/` | 확정 모델 (Git 포함) |
 | `scripts/` | 환경 설치·검증, 평가, 희소성 분석 |
 | `docs/` | 검증 결과, 분석 결과, 조사 자료 |

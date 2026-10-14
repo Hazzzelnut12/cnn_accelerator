@@ -8,6 +8,7 @@ __pycache__/
 # Datasets, checkpoints, and generated outputs
 data/
 artifacts/
+build/
 
 # Vivado simulation/build outputs
 .Xil/
