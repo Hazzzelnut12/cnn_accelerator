@@ -1,0 +1,18 @@
+# Local Python installation, environment, and download cache
+.tools/
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+
+# Datasets, checkpoints, and generated outputs
+data/
+artifacts/
+
+# Vivado simulation/build outputs
+.Xil/
+*.jou
+*.log
+*.wdb
+*.vcd
+*.saif
