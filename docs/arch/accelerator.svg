@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1150" font-family="'IBM Plex Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif" role="img" aria-label="CNN 가속기 블록 구조도">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1E2430"/></marker>
+    <marker id="ahc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7C5CD6"/></marker>
+    <marker id="ahm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1F9E7A"/></marker>
+    <marker id="aho" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2770F"/></marker>
+    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F6FD0"/></marker>
+    <style>
+      .t { font-size: 20px; fill: #1E2430; text-anchor: middle; }
+      .tb { font-size: 21px; font-weight: 700; fill: #1E2430; text-anchor: middle; }
+      .s { font-size: 16px; fill: #4A5563; }
+      .sm { font-size: 16px; fill: #4A5563; text-anchor: middle; }
+      .num { font-size: 15px; font-weight: 700; fill: #FFFFFF; text-anchor: middle; }
+      .badge { fill: #1E2430; }
+      .ctl { fill: #EEE8FF; stroke: #7C5CD6; stroke-width: 2; }
+      .mem { fill: #DDF4EC; stroke: #1F9E7A; stroke-width: 2; }
+      .cmp { fill: #E2EEFF; stroke: #2F6FD0; stroke-width: 2; }
+      .post { fill: #FFF0DB; stroke: #C2770F; stroke-width: 2; }
+      .out { fill: #E2F5E4; stroke: #2E9A46; stroke-width: 2; }
+      .mux { fill: #FFF6CF; stroke: #C29B0F; stroke-width: 2; }
+      .data { stroke: #1E2430; stroke-width: 2.5; fill: none; marker-end: url(#ah); }
+      .thick { stroke: #1E2430; stroke-width: 4; fill: none; marker-end: url(#ah); }
+      .ctlw { stroke: #7C5CD6; stroke-width: 2; stroke-dasharray: 7 5; fill: none; marker-end: url(#ahc); }
+      .wb { stroke: #1F9E7A; stroke-width: 3.5; fill: none; marker-end: url(#ahm); }
+      .fc2 { stroke: #C2770F; stroke-width: 2.5; stroke-dasharray: 7 5; fill: none; marker-end: url(#aho); }
+      .ps { stroke: #2F6FD0; stroke-width: 2.5; fill: none; marker-end: url(#ahb); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1150" fill="#FFFFFF"/>
+  <text x="800" y="48" class="tb" style="font-size:30px">CNN 가속기 구조 · 공유 MAC 배열 (P = 8)</text>
+
+  <rect x="230" y="80" width="1350" height="1040" rx="14" fill="none" stroke="#8A94A3" stroke-width="2" stroke-dasharray="12 8"/>
+  <text x="252" y="110" class="s">PL (FPGA) · 100 MHz 단일 클럭</text>
+
+  <!-- 연결선 (블록 뒤에 그림) -->
+  <path d="M190,175 H272" class="ps"/>
+  <text x="235" y="163" class="sm">start · N</text>
+  <path d="M280,232 H198" class="ctlw"/>
+  <text x="235" y="254" class="sm">done IRQ</text>
+  <path d="M556,200 H594" class="ctlw" marker-start="url(#ahc)"/>
+  <path d="M930,200 H972" class="ctlw"/>
+  <path d="M1170,260 V302" class="ctlw"/>
+  <path d="M190,380 H272" class="ps"/>
+  <text x="235" y="368" class="sm">crop 쓰기</text>
+  <path d="M550,400 H575 V555 H594" class="data"/>
+  <path d="M550,595 H594" class="data"/>
+  <path d="M670,260 V507" class="ctlw"/>
+  <text x="680" y="400" class="s">층 선택</text>
+  <path d="M740,570 H782" class="thick"/>
+  <text x="612" y="660" class="s">x 1개를 PE 8개에</text>
+  <text x="612" y="682" class="s">동시에 방송</text>
+  <path d="M1170,420 V462" class="thick"/>
+  <text x="1182" y="448" class="s">w0 … w7</text>
+  <path d="M895,680 V732" class="thick"/>
+  <text x="907" y="712" class="s">누산값 8개</text>
+  <path d="M990,795 H1022" class="data"/>
+  <path d="M1280,795 H1312" class="data"/>
+  <path d="M1435,850 V900 H415 V658" class="wb"/>
+  <rect x="1040" y="884" width="300" height="32" fill="#FFFFFF"/>
+  <text x="1190" y="907" class="sm" style="fill:#13795B;font-weight:700">다음 층 입력으로 저장 (8 bit)</text>
+  <path d="M850,850 V1010 H778" class="fc2"/>
+  <text x="862" y="960" class="s" style="fill:#9A5B07">FC2 logit</text>
+  <path d="M610,1010 H558" class="fc2"/>
+  <path d="M280,1010 H198" class="ps"/>
+  <text x="235" y="998" class="sm">결과 읽기</text>
+
+  <!-- 블록 -->
+  <g class="blk" data-b="arm" tabindex="0">
+    <rect x="20" y="140" width="170" height="900" rx="12" fill="#DCEBFF" stroke="#2F6FD0" stroke-width="2"/>
+    <text x="105" y="560" class="tb">ARM (PS)</text>
+    <text x="105" y="600" class="sm">전처리·CCL</text>
+    <text x="105" y="624" class="sm">가속기 제어</text>
+    <text x="105" y="648" class="sm">Softmax·표시</text>
+    <circle cx="44" cy="164" r="14" class="badge"/><text x="44" y="169" class="num">1</text>
+  </g>
+  <g class="blk" data-b="regs" tabindex="0">
+    <rect x="280" y="140" width="270" height="120" rx="10" class="ctl"/>
+    <text x="415" y="180" class="tb">AXI-Lite 레지스터</text>
+    <text x="415" y="210" class="t">start · busy / done</text>
+    <text x="415" y="238" class="t">N · cycle count</text>
+    <circle cx="300" cy="160" r="14" class="badge"/><text x="300" y="165" class="num">2</text>
+  </g>
+  <g class="blk" data-b="fsm" tabindex="0">
+    <rect x="600" y="140" width="330" height="120" rx="10" class="ctl"/>
+    <text x="765" y="180" class="tb">메인 제어 FSM</text>
+    <text x="765" y="210" class="t">Conv1 → Conv2 → FC1 → FC2</text>
+    <text x="765" y="238" class="t">crop N개 반복 · 버퍼 교대</text>
+    <circle cx="620" cy="160" r="14" class="badge"/><text x="620" y="165" class="num">3</text>
+  </g>
+  <g class="blk" data-b="agen" tabindex="0">
+    <rect x="980" y="140" width="380" height="120" rx="10" class="ctl"/>
+    <text x="1170" y="180" class="tb">주소 생성기 + 항 sequencer</text>
+    <text x="1170" y="210" class="t">dense: 항 0 … K−1 순서대로</text>
+    <text x="1170" y="238" class="t">skip: 0 아닌 항만 (P10)</text>
+    <circle cx="1000" cy="160" r="14" class="badge"/><text x="1000" y="165" class="num">4</text>
+  </g>
+  <g class="blk" data-b="inbuf" tabindex="0">
+    <rect x="280" y="320" width="270" height="120" rx="10" class="mem"/>
+    <text x="415" y="360" class="tb">입력 버퍼 A / B</text>
+    <text x="415" y="390" class="t">784 B × 2 (ping-pong)</text>
+    <text x="415" y="418" class="sm">계산 중 다음 crop 쓰기</text>
+    <circle cx="300" cy="340" r="14" class="badge"/><text x="300" y="345" class="num">5</text>
+  </g>
+  <g class="blk" data-b="feat" tabindex="0">
+    <rect x="280" y="480" width="270" height="170" rx="10" class="mem"/>
+    <text x="415" y="520" class="tb">Feature 버퍼</text>
+    <text x="415" y="552" class="t">Pool1  1,568 B</text>
+    <text x="415" y="580" class="t">Pool2  784 B</text>
+    <text x="415" y="608" class="t">FC1 출력  32 B</text>
+    <circle cx="300" cy="500" r="14" class="badge"/><text x="300" y="505" class="num">6</text>
+  </g>
+  <g class="blk" data-b="mux" tabindex="0">
+    <rect x="600" y="515" width="140" height="110" rx="10" class="mux"/>
+    <text x="670" y="563" class="tb">입력 선택</text>
+    <text x="670" y="593" class="t">MUX</text>
+    <circle cx="616" cy="531" r="14" class="badge"/><text x="616" y="536" class="num">7</text>
+  </g>
+  <g class="blk" data-b="rom" tabindex="0">
+    <rect x="980" y="310" width="380" height="110" rx="10" class="mem"/>
+    <text x="1170" y="350" class="tb">Weight · Bias ROM</text>
+    <text x="1170" y="380" class="t">.mem으로 초기화 · 합성 시 고정</text>
+    <text x="1170" y="406" class="sm">한 word = weight 8개 (64 bit)</text>
+    <circle cx="1000" cy="330" r="14" class="badge"/><text x="1000" y="335" class="num">8</text>
+  </g>
+  <g class="blk" data-b="mac" tabindex="0">
+    <rect x="790" y="470" width="660" height="210" rx="12" fill="#F1EBFF" stroke="#7C5CD6" stroke-width="2"/>
+    <text x="840" y="500" class="s" style="font-weight:700;fill:#4B2FA6">MAC 배열 · PE 8개 = 출력 채널 8개 병렬</text>
+    <rect x="810" y="525" width="64" height="110" rx="6" class="cmp"/><text x="842" y="586" class="t">PE0</text>
+    <rect x="888" y="525" width="64" height="110" rx="6" class="cmp"/><text x="920" y="586" class="t">PE1</text>
+    <rect x="966" y="525" width="64" height="110" rx="6" class="cmp"/><text x="998" y="586" class="t">PE2</text>
+    <rect x="1044" y="525" width="64" height="110" rx="6" class="cmp"/><text x="1076" y="586" class="t">PE3</text>
+    <rect x="1122" y="525" width="64" height="110" rx="6" class="cmp"/><text x="1154" y="586" class="t">PE4</text>
+    <rect x="1200" y="525" width="64" height="110" rx="6" class="cmp"/><text x="1232" y="586" class="t">PE5</text>
+    <rect x="1278" y="525" width="64" height="110" rx="6" class="cmp"/><text x="1310" y="586" class="t">PE6</text>
+    <rect x="1356" y="525" width="64" height="110" rx="6" class="cmp"/><text x="1388" y="586" class="t">PE7</text>
+    <text x="1120" y="664" class="sm">PE = 8 bit × 8 bit 곱셈 + 24 bit 누산 (출력이 끝날 때까지 부분합 유지)</text>
+    <circle cx="812" cy="494" r="14" class="badge"/><text x="812" y="499" class="num">9</text>
+  </g>
+  <g class="blk" data-b="relu" tabindex="0">
+    <rect x="800" y="740" width="190" height="110" rx="10" class="post"/>
+    <text x="895" y="788" class="tb">bias 더하기</text>
+    <text x="895" y="818" class="t">→ ReLU</text>
+    <circle cx="818" cy="758" r="14" class="badge"/><text x="818" y="763" class="num">10</text>
+  </g>
+  <g class="blk" data-b="rq" tabindex="0">
+    <rect x="1030" y="740" width="250" height="110" rx="10" class="post"/>
+    <text x="1155" y="778" class="tb">재양자화 (1개, 순차)</text>
+    <text x="1155" y="808" class="t">×M · 반올림 · &gt;&gt;n</text>
+    <text x="1155" y="834" class="t">127 포화</text>
+    <circle cx="1048" cy="758" r="14" class="badge"/><text x="1048" y="763" class="num">11</text>
+  </g>
+  <g class="blk" data-b="pool" tabindex="0">
+    <rect x="1320" y="740" width="230" height="110" rx="10" class="post"/>
+    <text x="1435" y="788" class="tb">2×2 MaxPool</text>
+    <text x="1435" y="818" class="t">결합 (Conv만)</text>
+    <circle cx="1338" cy="758" r="14" class="badge"/><text x="1338" y="763" class="num">12</text>
+  </g>
+  <g class="blk" data-b="argmax" tabindex="0">
+    <rect x="610" y="975" width="168" height="70" rx="10" class="post"/>
+    <text x="694" y="1018" class="tb">argmax</text>
+    <circle cx="626" cy="991" r="14" class="badge"/><text x="626" y="996" class="num">13</text>
+  </g>
+  <g class="blk" data-b="outb" tabindex="0">
+    <rect x="280" y="940" width="270" height="140" rx="10" class="out"/>
+    <text x="415" y="982" class="tb">출력 버퍼</text>
+    <text x="415" y="1012" class="t">logit 10개 + 예측 숫자</text>
+    <text x="415" y="1040" class="t">crop 16장 분량</text>
+    <circle cx="300" cy="960" r="14" class="badge"/><text x="300" y="965" class="num">14</text>
+  </g>
+
+  <!-- 범례 -->
+  <rect x="980" y="950" width="570" height="140" rx="10" fill="#FBF8EC" stroke="#C29B0F" stroke-width="1.5"/>
+  <text x="1005" y="988" class="s">실선 = 데이터 · 점선 = 제어/주소 · 녹색 = 층 사이 저장</text>
+  <text x="1005" y="1018" class="s">FC1·FC2도 같은 MAC 배열 사용 (주소 생성만 다름)</text>
+  <text x="1005" y="1048" class="s">주소 생성기가 모든 버퍼·ROM의 주소를 냄</text>
+  <text x="1005" y="1076" class="s">zero-skip = 항 sequencer만 교체 (P10)</text>
+</svg>

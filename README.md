@@ -4,7 +4,8 @@ Zynq-7020 보드에서 손글씨 숫자열을 실시간으로 판독. LeNet 계�
 
 - **계획:** [계획.md](계획.md) · **진행 기록:** [개발기록.md](개발기록.md)
 - **확정 모델:** float [mnist_float_v1](models/mnist_float_v1/) (test 99.04%) → INT8 [mnist_int8_v1](models/mnist_int8_v1/) (test 99.04%), 규격 [int8-spec](docs/spec/int8-spec.md)
-- **진행:** P0~P3 ✅ · 다음 P4a RTL 구조 설계
+- **가속기 구조:** [docs/arch/accelerator.md](docs/arch/accelerator.md)
+- **진행:** P0~P4a ✅ · 다음 P4b RTL 단위 모듈
 
 ## 시작하기
 
