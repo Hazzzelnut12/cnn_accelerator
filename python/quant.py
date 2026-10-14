@@ -124,7 +124,7 @@ def forward_batched(params: dict, q_in: np.ndarray, batch: int = 1000) -> np.nda
     return np.concatenate([forward(params, q_in[i:i + batch]) for i in range(0, len(q_in), batch)])
 
 
-# 블록 5: 저장된 정수 모델 불러오기 (scripts/quantize.py --save 결과)
+# 블록 5: 저장된 정수 모델 불러오기 (python/quantize.py --save 결과)
 def load_params(model_dir) -> dict:
     import json
     from pathlib import Path

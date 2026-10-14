@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import torch
@@ -11,9 +10,9 @@ from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 
+from train import MnistCNN, validate
+
 PROJECT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT))
-from train import MnistCNN, validate  # noqa: E402
 
 
 def main() -> None:

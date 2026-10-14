@@ -14,6 +14,9 @@ from torch.utils.data import DataLoader, Subset, random_split
 from torchvision.datasets import MNIST
 from torchvision.transforms import Compose, RandomAffine, ToTensor
 
+# 프로젝트 루트(python/의 상위). 데이터셋과 실행 결과는 루트의 data/, artifacts/에 저장.
+PROJECT = Path(__file__).resolve().parent.parent
+
 
 # 학습용 증강: 작은 회전(±10도)·이동(±10%)·크기(90~110%). 빈 영역은 0(검은 배경)으로 채움.
 # 숫자 의미가 바뀌는 좌우 반전·큰 회전은 사용하지 않음.
@@ -67,8 +70,8 @@ class MnistCNN(nn.Module):
 
 # 블록 2: MNIST 불러오기와 학습용/검증용 분할
 def load_mnist(seed: int = 42, augment: bool = False) -> tuple[Subset, Subset]:
-    # 실행 위치와 관계없이 train.py 옆의 data 폴더에 저장.
-    data_dir = Path(__file__).resolve().parent / "data"
+    # 실행 위치와 관계없이 프로젝트 루트의 data 폴더에 저장.
+    data_dir = PROJECT / "data"
 
     # train=True: 공식 학습 데이터 60,000장 사용.
     # ToTensor: 픽셀 0~255 → float32 0~1, 크기 (1, 28, 28).
@@ -257,7 +260,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--log-interval", type=int, default=100, help="몇 batch마다 진행 상황을 표시할지")
     parser.add_argument(
         "--output-dir", type=Path,
-        default=Path(__file__).resolve().parent / "artifacts" / "mnist",
+        default=PROJECT / "artifacts" / "mnist",
         help="실행별 결과 폴더를 만들 위치",
     )
     args = parser.parse_args()
@@ -390,7 +393,7 @@ def main() -> None:
     checkpoint = torch.load(best_path, map_location=device, weights_only=True)
     model.load_state_dict(checkpoint["model_state_dict"])
     test_dataset = MNIST(
-        root=Path(__file__).resolve().parent / "data",
+        root=PROJECT / "data",
         train=False, download=True, transform=ToTensor(),
     )
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=0)

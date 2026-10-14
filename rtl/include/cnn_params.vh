@@ -1,4 +1,4 @@
-// 자동 생성: scripts/pack_mem.py. 직접 수정하지 말 것.
+// 자동 생성: python/pack_mem.py. 직접 수정하지 말 것.
 // 원본: models/mnist_int8_v1/spec.json
 `define CNN_P            8
 `define CNN_DATA_W       8

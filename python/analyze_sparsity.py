@@ -10,16 +10,15 @@
 import argparse
 import json
 import math
-import sys
 from pathlib import Path
 
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
+from train import MnistCNN, load_mnist
+
 PROJECT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT))
-from train import MnistCNN, load_mnist  # noqa: E402
 
 
 # 블록 1: 각 관측 위치의 activation 계산 (train.py MnistCNN.forward와 같은 순서)
@@ -51,7 +50,7 @@ def quantiles(values: torch.Tensor) -> dict[str, float]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint", type=Path, default=PROJECT / "models" / "mnist_float_v1" / "best.pt")
-    parser.add_argument("--output", type=Path, default=PROJECT / "docs" / "analysis" / "sparsity-mnist_float_v1.json")
+    parser.add_argument("--output", type=Path, default=PROJECT / "results" / "sparsity-mnist_float_v1.json")
     parser.add_argument("--mac", type=int, default=8, help="출력 채널 병렬 MAC 수 P (기본: 8)")
     parser.add_argument("--overhead", type=int, nargs="+", default=[0, 2], help="skip window당 추가 cycle 가정")
     args = parser.parse_args()

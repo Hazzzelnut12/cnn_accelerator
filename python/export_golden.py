@@ -8,15 +8,14 @@
 import argparse
 import json
 import shutil
-import sys
 from pathlib import Path
 
 import numpy as np
 from torchvision.datasets import MNIST
 
+import quant
+
 PROJECT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT))
-import quant  # noqa: E402
 
 # 텐서별 hex 자릿수: 누산값·bias·logit은 INT32, 나머지는 8bit
 WIDE = {"conv1_acc", "conv2_acc", "fc1_acc", "logits"}

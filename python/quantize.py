@@ -8,7 +8,6 @@
 import argparse
 import hashlib
 import json
-import sys
 from pathlib import Path
 
 import numpy as np
@@ -16,10 +15,10 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 
+import quant
+from train import MnistCNN, load_mnist
+
 PROJECT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT))
-import quant  # noqa: E402
-from train import MnistCNN, load_mnist  # noqa: E402
 
 ACC_LAYERS = ["conv1_acc", "conv2_acc", "fc1_acc", "logits"]
 ZERO_POINTS = {"input": "Conv1 입력", "pool1": "Conv2 입력", "pool2": "FC1 입력", "fc1_out": "FC2 입력"}
@@ -61,7 +60,7 @@ def evaluate(params: dict, pixels: np.ndarray, labels: np.ndarray, batch: int = 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model-dir", type=Path, default=PROJECT / "models" / "mnist_float_v1")
-    parser.add_argument("--report", type=Path, default=PROJECT / "docs" / "analysis" / "int8-comparison.json")
+    parser.add_argument("--report", type=Path, default=PROJECT / "results" / "int8-comparison.json")
     parser.add_argument("--save", metavar="VARIANT:METHOD", help="이 설정을 저장 (예: unsigned:max)")
     parser.add_argument("--out-dir", type=Path, default=PROJECT / "models" / "mnist_int8_v1")
     args = parser.parse_args()

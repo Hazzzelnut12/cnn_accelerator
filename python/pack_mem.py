@@ -8,14 +8,13 @@
 """
 
 import argparse
-import sys
 from pathlib import Path
 
 import numpy as np
 
+import quant
+
 PROJECT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT))
-import quant  # noqa: E402
 
 P = 8  # PE 수 = 한 word에 묶는 출력 채널 수
 BIAS_BITS = 32
@@ -52,7 +51,7 @@ def main() -> None:
 
     bias_max = max(abs(b) for b in biases)
     lines = [
-        "// 자동 생성: scripts/pack_mem.py. 직접 수정하지 말 것.",
+        "// 자동 생성: python/pack_mem.py. 직접 수정하지 말 것.",
         f"// 원본: {args.model_dir.relative_to(PROJECT).as_posix()}/spec.json",
         f"`define CNN_P            {P}",
         "`define CNN_DATA_W       8",
