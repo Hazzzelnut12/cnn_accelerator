@@ -49,7 +49,7 @@ try {
     & $uvExecutable sync --locked --managed-python
     if ($LASTEXITCODE -ne 0) { throw 'Environment setup failed.' }
 
-    & (Join-Path $projectRoot '.venv\Scripts\python.exe') (Join-Path $PSScriptRoot 'check_env.py') --output (Join-Path $projectRoot 'results\environment.json')
+    & (Join-Path $projectRoot '.venv\Scripts\python.exe') (Join-Path $PSScriptRoot 'check_env.py') --output (Join-Path $projectRoot 'build\environment.json')
     if ($LASTEXITCODE -ne 0) { throw 'CUDA validation failed.' }
 }
 finally {

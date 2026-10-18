@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader, Subset, random_split
 from torchvision.datasets import MNIST
 from torchvision.transforms import Compose, RandomAffine, ToTensor
 
-# 프로젝트 루트(python/의 상위). 데이터셋과 실행 결과는 루트의 data/, artifacts/에 저장.
+# 프로젝트 루트(python/의 상위). 데이터는 data/, 학습 실행 결과는 build/training/에 저장.
 PROJECT = Path(__file__).resolve().parent.parent
 
 
@@ -260,7 +260,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--log-interval", type=int, default=100, help="몇 batch마다 진행 상황을 표시할지")
     parser.add_argument(
         "--output-dir", type=Path,
-        default=PROJECT / "artifacts" / "mnist",
+        default=PROJECT / "build" / "training",
         help="실행별 결과 폴더를 만들 위치",
     )
     args = parser.parse_args()

@@ -1,7 +1,7 @@
 [project]
 name = "cnn-accelerator"
 version = "0.1.0"
-description = "MNIST CNN training and integer reference for a Zynq accelerator"
+description = "MNIST CNN training and evaluation"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "numpy>=2.2,<3",
