@@ -1,0 +1,2 @@
+# Preserve the verified HTML checksum across Windows and Linux checkouts.
+docs/reference/claude-testbench/testbench_v3.html text eol=lf

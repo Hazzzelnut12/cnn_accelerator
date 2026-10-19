@@ -1,0 +1,225 @@
+{
+  "artifact": "testbench_v3.html",
+  "checkedDateKST": "2026-10-19",
+  "sha256": "f46eb9a78d08e7937fb9edb12824c85ae2c319c67449d004b85b7edfa8668c7d",
+  "status": "reference_draft_checks_passed_hardware_unverified",
+  "scriptSyntax": "pass",
+  "sourceComparison": {
+    "allEmbeddedDataEqualV1": true,
+    "allEmbeddedDataEqualV2": true,
+    "coreEqualV1": true,
+    "coreEqualV2": true,
+    "fitTo28EqualV1": true
+  },
+  "model": {
+    "run": "20261014-202115-737092",
+    "epoch": 27,
+    "parameters": 26698,
+    "layout": [
+      {
+        "name": "conv1.weight",
+        "shape": [
+          8,
+          1,
+          3,
+          3
+        ]
+      },
+      {
+        "name": "conv1.bias",
+        "shape": [
+          8
+        ]
+      },
+      {
+        "name": "conv2.weight",
+        "shape": [
+          16,
+          8,
+          3,
+          3
+        ]
+      },
+      {
+        "name": "conv2.bias",
+        "shape": [
+          16
+        ]
+      },
+      {
+        "name": "fc1.weight",
+        "shape": [
+          32,
+          784
+        ]
+      },
+      {
+        "name": "fc1.bias",
+        "shape": [
+          32
+        ]
+      },
+      {
+        "name": "fc2.weight",
+        "shape": [
+          10,
+          32
+        ]
+      },
+      {
+        "name": "fc2.bias",
+        "shape": [
+          10
+        ]
+      }
+    ]
+  },
+  "embeddedSamples": {
+    "count": 200,
+    "predictionMismatches": 0,
+    "maxLogitDiff": 8.106231689453125e-06
+  },
+  "smoke": {
+    "adaptiveSeparatedCandidates": 2,
+    "adaptiveBlankCandidates": 0,
+    "otsuInkPixels": 0
+  },
+  "argmaxSmallestTie": 0,
+  "arithmetic": {
+    "romWords": 3353,
+    "romBytes": 26824,
+    "macCyclesPerCrop": 38480,
+    "macOnlyMsAt100MHz": 0.3848,
+    "accumulationMagnitudeExcludingBias": [
+      293760,
+      2350080,
+      25589760,
+      1044480
+    ],
+    "signedBitsExcludingBias": [
+      20,
+      23,
+      26,
+      21
+    ]
+  },
+  "scope": "Reference document, source/data consistency and browser functionality only. No RTL, INT8 accuracy, full-scene accuracy or board performance validation.",
+  "checkpointComparison": {
+    "allTensorBytesEqual": true,
+    "elements": 26698,
+    "tensors": [
+      {
+        "name": "conv1.weight",
+        "elements": 72,
+        "bytesEqual": true
+      },
+      {
+        "name": "conv1.bias",
+        "elements": 8,
+        "bytesEqual": true
+      },
+      {
+        "name": "conv2.weight",
+        "elements": 1152,
+        "bytesEqual": true
+      },
+      {
+        "name": "conv2.bias",
+        "elements": 16,
+        "bytesEqual": true
+      },
+      {
+        "name": "fc1.weight",
+        "elements": 25088,
+        "bytesEqual": true
+      },
+      {
+        "name": "fc1.bias",
+        "elements": 32,
+        "bytesEqual": true
+      },
+      {
+        "name": "fc2.weight",
+        "elements": 320,
+        "bytesEqual": true
+      },
+      {
+        "name": "fc2.bias",
+        "elements": 10,
+        "bytesEqual": true
+      }
+    ],
+    "checkpointSha256": "4c5dcbf2213a8de59b9114c307408b18dd3fafcbe43cc4ecf66683f721f8564f",
+    "method": "Metadata-only unpickler and contiguous little-endian float32 storage byte comparison; no PyTorch inference."
+  },
+  "svgXmlParse": {
+    "count": 1,
+    "status": "pass"
+  },
+  "duplicateHtmlIds": [],
+  "designReview": {
+    "previousArgmaxClaimCorrected": true,
+    "requantizationFullProductWidthDefined": true,
+    "dspCountMarkedUnconfirmed": true,
+    "biasIncludedInRangeChecks": true,
+    "layerTransitionRequiresDrainAndWrites": true,
+    "doneRequiresFinalOutputWrite": true,
+    "bufferReleaseAfterFinalRead": true,
+    "invalidCommandsDescribed": true
+  },
+  "knownImplementationWork": [
+    "Otsu black/white threshold boundary bug remains; default adaptive mode unaffected.",
+    "Binary-mask crop differs from planned grayscale crop.",
+    "Overflow selection remains area-first, not reading-order-first.",
+    "Quantization, busy-clear policy, memory visibility/barriers, RTL timing/resources and full-scene/board performance still require implementation and validation."
+  ],
+  "previousArtifactSha256": {
+    "testbench_full.html": "c945cbccb3fb61671ba9bcab053407845fc7d198d13859bfbe42b313a22c8a09",
+    "testbench_v2.html": "149c41e0661038b1308680b9c43c15a71a3315a9cee6337dcfb5384e52375923"
+  },
+  "browser": {
+    "initialCandidates": 10,
+    "tabs": [
+      {
+        "button": "viewArchBtn",
+        "visible": true,
+        "selected": "true",
+        "visiblePanels": 1
+      },
+      {
+        "button": "viewSingleBtn",
+        "visible": true,
+        "selected": "true",
+        "visiblePanels": 1
+      },
+      {
+        "button": "viewReaderBtn",
+        "visible": true,
+        "selected": "true",
+        "visiblePanels": 1
+      }
+    ],
+    "cards": 15,
+    "blocks": 15,
+    "rows": 17,
+    "holdSelected": true,
+    "blankCandidates": 0,
+    "runtimeErrors": [],
+    "method": "Headless Chrome, temporary HTML copy with DOM-click probe; no original artifact modification."
+  },
+  "cleanup": {
+    "retained": [
+      "testbench_v3.html",
+      "README.md",
+      "verification.json"
+    ],
+    "removedObsoleteFiles": [
+      "testbench_full.html",
+      "testbench_v2.html",
+      "testbench_logic.js",
+      "HANDOFF.md",
+      "REVIEW_v2.md",
+      "verification_v2.json"
+    ]
+  }
+}

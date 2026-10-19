@@ -8,3 +8,6 @@ __pycache__/
 # Datasets, checkpoints, and generated outputs
 data/
 build/
+
+# Local vendor board package (manuals, examples, and disk images)
+/\[Libertron\] AI Starter Kit v2.1 _홍익대학교/
